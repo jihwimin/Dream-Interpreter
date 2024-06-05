@@ -1,20 +1,15 @@
 package com.example.dreaminterpreterai;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Collections;
+import java.util.regex.Pattern;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText dreamInput;
     private TextView interpretationOutput;
     private Button interpretButton;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +39,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void interpretDream() {
         String dream = dreamInput.getText().toString();
-        ChatRequest.Message userMessage = new ChatRequest.Message("user", dream);
+        String prompt;
+
+        if (containsKoreanCharacters(dream)) {
+            prompt = "당신은 꿈 해석가입니다. 다음 꿈을 해석하십시오: " + dream +
+                    ". 해석된 결과를 섹션으로 나누어 예측하십시오.";
+        } else {
+            prompt = "You are a dream interpreter. Interpret the following dream: " + dream +
+                    ". Organize the interpretation into sections and give a prediction of the future.";
+        }
+        ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
         ChatRequest request = new ChatRequest("gpt-3.5-turbo", Collections.singletonList(userMessage));
 
         ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
@@ -56,14 +61,26 @@ public class MainActivity extends AppCompatActivity {
                     String interpretation = response.body().getChoices().get(0).getMessage().getContent();
                     interpretationOutput.setText(interpretation);
                 } else {
+                    Log.e(TAG, "Response code: " + response.code() + " Message: " + response.message());
+                    if (response.errorBody() != null) {
+                        try {
+                            Log.e(TAG, "Error body: " + response.errorBody().string());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     interpretationOutput.setText("Failed to interpret dream.");
                 }
             }
 
             @Override
             public void onFailure(Call<ChatResponse> call, Throwable t) {
+                Log.e(TAG, "Failure: " + t.getMessage());
                 interpretationOutput.setText("Error: " + t.getMessage());
             }
         });
+    }
+    private boolean containsKoreanCharacters(String text) {
+        return Pattern.compile("[ㄱ-ㅎㅏ-ㅣ가-힣]").matcher(text).find();
     }
 }

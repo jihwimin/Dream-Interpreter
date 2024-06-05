@@ -9,7 +9,7 @@
         android:id="@+id/dreamInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="'Interpret a dream of ...' " />
+        android:hint="Enter your dream..." />
 
     <Button
         android:id="@+id/interpretButton"

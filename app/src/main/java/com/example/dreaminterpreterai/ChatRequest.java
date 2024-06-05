@@ -1,6 +1,5 @@
 package com.example.dreaminterpreterai;
 
-// ChatRequest.java
 import java.util.List;
 
 public class ChatRequest {

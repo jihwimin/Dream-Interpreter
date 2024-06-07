@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 public class MainActivity extends AppCompatActivity {
     private EditText dreamInput;
     private TextView interpretationOutput;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private static final String DISCLAIMER = "주의사항: 꿈 해석은 주관적이며 모든 사람에게 해당되지는 않을 수 있습니다. 아래 해석은 단순한 예측에 불과하니 유념하시기 바랍니다.";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,4 +88,5 @@ public class MainActivity extends AppCompatActivity {
     private boolean containsKoreanCharacters(String text) {
         return Pattern.compile("[ㄱ-ㅎㅏ-ㅣ가-힣]").matcher(text).find();
     }
+
 }

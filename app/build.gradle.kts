@@ -14,10 +14,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Read API key from local.properties
-        val apiKey: String = project.findProperty("openai.api.key") as String? ?: ""
-        buildConfigField("String", "OPENAI_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {

@@ -29,13 +29,18 @@ public class ApiClient {
     private static Retrofit retrofit;
     private static final String BASE_URL = "https://api.openai.com/v1/";
 
-    public static Retrofit getRetrofitInstance() {
+    public static Retrofit getRetrofitInstance(String apiKey) {
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(logging);
+            httpClient.addInterceptor(chain -> {
+                return chain.proceed(chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .build());
+            });
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)

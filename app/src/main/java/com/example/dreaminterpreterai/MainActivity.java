@@ -7,9 +7,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.regex.Pattern;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button interpretButton;
     private static final String TAG = "MainActivity";
 
+    private String apiKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
         ChatRequest request = new ChatRequest("gpt-3.5-turbo", Collections.singletonList(userMessage));
 
-        ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
+        ApiInterface apiService = ApiClient.getRetrofitInstance(apiKey).create(ApiInterface.class);
         Call<ChatResponse> call = apiService.getDreamInterpretation(request);
 
         call.enqueue(new Callback<ChatResponse>() {
@@ -82,5 +85,15 @@ public class MainActivity extends AppCompatActivity {
     }
     private boolean containsKoreanCharacters(String text) {
         return Pattern.compile("[ㄱ-ㅎㅏ-ㅣ가-힣]").matcher(text).find();
+    }
+    private void loadApiKey() {
+        Properties properties = new Properties();
+        try {
+            InputStream inputStream = getAssets().open("config.properties");
+            properties.load(inputStream);
+            apiKey = properties.getProperty("API_KEY");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

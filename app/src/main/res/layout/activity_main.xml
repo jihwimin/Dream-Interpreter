@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#F5F5F5">
 
     <EditText
         android:id="@+id/dreamInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your dream..." />
+        android:hint="Enter your dream..."
+        android:padding="12dp"
+        android:background="@drawable/rounded_edittext"
+        app:drawableEndCompat="@drawable/ic_dream_small"
+        android:drawablePadding="8dp" />
 
     <Button
         android:id="@+id/interpretButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Interpret Dream" />
+        android:text="Interpret Dream"
+        android:background="@drawable/rounded_button"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
+        android:padding="12dp" />
 
     <TextView
         android:id="@+id/interpretationOutput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp" />
+        android:paddingTop="16dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_textview"
+        android:textColor="#333333"
+        android:textSize="16sp" />
 </LinearLayout>

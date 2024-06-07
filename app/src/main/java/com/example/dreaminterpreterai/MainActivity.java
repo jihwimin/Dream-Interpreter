@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private Button interpretButton;
     private static final String TAG = "MainActivity";
 
+    private static final String DISCLAIMER = "주의사항: 꿈 해석은 주관적이며 모든 사람에게 해당되지는 않을 수 있습니다. 아래 해석은 단순한 예측에 불과하니 유념하시기 바랍니다.";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ChatResponse> call, Response<ChatResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     String interpretation = response.body().getChoices().get(0).getMessage().getContent();
-                    interpretationOutput.setText(interpretation);
+                    String fullMessage = DISCLAIMER + "\n\n" + interpretation;
+                    interpretationOutput.setText(fullMessage);
                 } else {
                     Log.e(TAG, "Response code: " + response.code() + " Message: " + response.message());
                     if (response.errorBody() != null) {
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    interpretationOutput.setText("Failed to interpret dream.");
+                    interpretationOutput.setText(DISCLAIMER + "\n\nFailed to interpret dream.");
                 }
             }
 

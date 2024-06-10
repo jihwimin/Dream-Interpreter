@@ -1,5 +1,6 @@
 package com.example.dreaminterpreterai;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,10 +32,23 @@ public class MainActivity extends AppCompatActivity {
         interpretationOutput = findViewById(R.id.interpretationOutput);
         interpretButton = findViewById(R.id.interpretButton);
 
+        //Interpret Dream BUttom
         interpretButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 interpretDream();
+            }
+        });
+
+        //Back Button
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to InitialActivity
+                Intent intent = new Intent(MainActivity.this, InitialActivity.class);
+                startActivity(intent);
+                finish(); // Optionally call finish() to close MainActivity
             }
         });
     }

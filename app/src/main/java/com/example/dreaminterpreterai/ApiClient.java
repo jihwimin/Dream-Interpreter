@@ -1,5 +1,6 @@
 package com.example.dreaminterpreterai;
 
+import java.util.concurrent.TimeUnit;
 import io.github.cdimascio.dotenv.Dotenv;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -17,6 +18,11 @@ public class ApiClient {
 
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
             httpClient.addInterceptor(logging);
+
+            // Set timeout settings
+            httpClient.connectTimeout(30, TimeUnit.SECONDS); // 30 seconds connect timeout
+            httpClient.readTimeout(30, TimeUnit.SECONDS);    // 30 seconds read timeout
+            httpClient.writeTimeout(30, TimeUnit.SECONDS);   // 30 seconds write timeout
 
             // Read the API key from the environment variable
             //Dotenv dotenv = Dotenv.configure().load();

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DreamDiaryActivity extends AppCompatActivity {
+public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapter.OnDreamDeleteListener {
     private DreamDatabase db;
     private DreamDao dreamDao;
     private RecyclerView recyclerView;
@@ -51,8 +51,24 @@ public class DreamDiaryActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new DreamAdapter(dreamList);
+                        adapter = new DreamAdapter(dreamList, DreamDiaryActivity.this);
                         recyclerView.setAdapter(adapter);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void onDelete(Dream dream) {
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                dreamDao.delete(dream);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadDreams();
                     }
                 });
             }

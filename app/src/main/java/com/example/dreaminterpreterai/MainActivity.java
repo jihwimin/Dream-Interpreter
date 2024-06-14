@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText dreamInput;
     private TextView interpretationOutput;
     private Button interpretButton, backButton;
+    private ProgressBar progressBar;
     private DreamDatabase db;
     private DreamDao dreamDao;
     private static final String TAG = "MainActivity";
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         interpretationOutput = findViewById(R.id.interpretationOutput);
         interpretButton = findViewById(R.id.interpretButton);
         backButton = findViewById(R.id.backButton);
+        progressBar = findViewById(R.id.progressBar);
 
         // Initialize the database and DAO
         db = DreamDatabase.getInstance(this);
@@ -73,14 +76,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
-        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));  // Changed model to gpt-4o
+        ChatRequest request = new ChatRequest("gpt-3.5 turbo", Collections.singletonList(userMessage));
 
         ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
         Call<ChatResponse> call = apiService.getDreamInterpretation(request);
 
+        progressBar.setVisibility(View.VISIBLE);
+        interpretationOutput.setText(""); // Clear previous output
+
         call.enqueue(new Callback<ChatResponse>() {
             @Override
             public void onResponse(Call<ChatResponse> call, Response<ChatResponse> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     String interpretation = response.body().getChoices().get(0).getMessage().getContent();
                     String fullMessage = DISCLAIMER + "\n\n" + interpretation;
@@ -103,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ChatResponse> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 if (attempt < MAX_RETRIES) {
                     Log.e(TAG, "Failure: " + t.getMessage() + ". Retrying... (" + (attempt + 1) + "/" + MAX_RETRIES + ")");
                     interpretDream(attempt + 1); // Retry

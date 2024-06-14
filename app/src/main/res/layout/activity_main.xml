@@ -26,7 +26,8 @@
                 android:padding="12dp"
                 android:background="@drawable/rounded_edittext"
                 app:drawableEndCompat="@drawable/ic_dream_small"
-                android:drawablePadding="8dp" />
+                android:drawablePadding="8dp"
+                android:textColor="@color/dark_purple" /> <!-- Set text color to dark purple -->
 
             <Button
                 android:id="@+id/interpretButton"
@@ -42,11 +43,18 @@
                 android:id="@+id/interpretationOutput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:padding="12dp"
                 android:background="@drawable/rounded_textview"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
                 android:textColor="#333333"
                 android:textSize="16sp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

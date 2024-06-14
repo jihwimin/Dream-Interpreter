@@ -1,4 +1,4 @@
-package com.example.dreaminterpreterai.dreamdiary;
+package com.example.dreaminterpreterai;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

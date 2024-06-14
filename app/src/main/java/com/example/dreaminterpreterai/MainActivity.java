@@ -9,9 +9,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.dreaminterpreterai.dreamdiary.Dream;
-import com.example.dreaminterpreterai.dreamdiary.DreamDao;
-
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,15 +18,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import java.util.regex.Pattern;
+
 public class MainActivity extends AppCompatActivity {
     private EditText dreamInput;
     private TextView interpretationOutput;
-    private Button interpretButton;
+    private Button interpretButton, backButton;
     private DreamDatabase db;
     private DreamDao dreamDao;
     private static final String TAG = "MainActivity";
-    private static final int MAX_RETRIES = 3;
     private static final String DISCLAIMER = "주의사항: 꿈 해석은 주관적이며 모든 사람에게 해당되지는 않을 수 있습니다. 아래 해석은 단순한 예측에 불과하니 유념하시기 바랍니다.";
+    private static final int MAX_RETRIES = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,28 +37,25 @@ public class MainActivity extends AppCompatActivity {
         dreamInput = findViewById(R.id.dreamInput);
         interpretationOutput = findViewById(R.id.interpretationOutput);
         interpretButton = findViewById(R.id.interpretButton);
+        backButton = findViewById(R.id.backButton);
 
-        //save dream details to the database
+        // Initialize the database and DAO
         db = DreamDatabase.getInstance(this);
         dreamDao = db.dreamDao();
 
-        //Interpret Dream BUttom
         interpretButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                interpretDream(0);
+                interpretDream(0); // Initial attempt
             }
         });
 
-        //Back Button
-        Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate back to InitialActivity
                 Intent intent = new Intent(MainActivity.this, InitialActivity.class);
                 startActivity(intent);
-                finish(); // Optionally call finish() to close MainActivity
+                finish();
             }
         });
     }
@@ -78,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
-        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));
+        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));  // Changed model to gpt-4o
 
         ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
         Call<ChatResponse> call = apiService.getDreamInterpretation(request);
@@ -120,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-
         });
     }
 
@@ -134,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
     private boolean containsKoreanCharacters(String text) {
         return Pattern.compile("[ㄱ-ㅎㅏ-ㅣ가-힣]").matcher(text).find();
     }
-
 }

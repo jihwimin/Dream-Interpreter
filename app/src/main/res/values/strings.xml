@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dream Interpreter AI</string>
+    <string name="dream_image">Dream Image</string>
 </resources>

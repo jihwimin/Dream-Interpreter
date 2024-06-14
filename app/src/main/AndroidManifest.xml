@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DreamInterpreterAI"
         tools:targetApi="31">
+
+        <!-- Initial Activity -->
         <activity
             android:name=".InitialActivity"
             android:exported="true">
@@ -21,14 +23,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
         </activity>
+
+        <!-- Dream Diary Activity -->
         <activity
-            android:name=".dreamdiary.DreamDiaryActivity"
+            android:name=".DreamDiaryActivity"
             android:exported="true" />
     </application>
 
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

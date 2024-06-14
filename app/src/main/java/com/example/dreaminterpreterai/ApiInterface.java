@@ -21,3 +21,4 @@ public interface ApiInterface {
     @POST("chat/completions")
     Call<ChatResponse> getDreamInterpretation(@Body ChatRequest request);
 }
+

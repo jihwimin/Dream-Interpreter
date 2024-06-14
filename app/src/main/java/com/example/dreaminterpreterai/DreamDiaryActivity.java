@@ -1,4 +1,4 @@
-package com.example.dreaminterpreterai.dreamdiary;
+package com.example.dreaminterpreterai;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,16 +7,11 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.dreaminterpreterai.DreamDatabase;
-import com.example.dreaminterpreterai.InitialActivity;
-import com.example.dreaminterpreterai.R;
-
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapter.OnDreamDeleteListener {
+public class DreamDiaryActivity extends AppCompatActivity {
     private DreamDatabase db;
     private DreamDao dreamDao;
     private RecyclerView recyclerView;
@@ -56,24 +51,8 @@ public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new DreamAdapter(dreamList, DreamDiaryActivity.this);
+                        adapter = new DreamAdapter(dreamList);
                         recyclerView.setAdapter(adapter);
-                    }
-                });
-            }
-        });
-    }
-
-    @Override
-    public void onDelete(Dream dream) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                dreamDao.delete(dream);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadDreams();
                     }
                 });
             }

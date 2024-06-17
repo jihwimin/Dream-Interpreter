@@ -69,14 +69,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (containsKoreanCharacters(dream)) {
             prompt = "당신은 꿈 해석가입니다. 다음 꿈을 해석하십시오: " + dream +
-                    ". 해석된 결과를 섹션으로 나누어 예측하십시오. '물론입니다'라고 대답하지 말고 센션으로 나눈 것만 대답해줘.";
+                    ". 해석된 결과를 섹션으로 나누어 예측하십시오. '물론입니다'라고 대답하지 말고 섹션으로 나눈 것만 대답해줘.";
         } else {
             prompt = "You are a dream interpreter. Interpret the following dream: " + dream +
                     ". Organize the interpretation into sections and give a prediction of the future.";
         }
 
         ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
-        ChatRequest request = new ChatRequest("gpt-3.5 turbo", Collections.singletonList(userMessage));
+        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));
 
         ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
         Call<ChatResponse> call = apiService.getDreamInterpretation(request);

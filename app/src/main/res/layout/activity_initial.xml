@@ -16,7 +16,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/dream_image"
         android:background="@drawable/rounded_image"
-        android:clipToOutline="true" /> <!-- Clip the image to the outline -->
+        android:clipToOutline="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -46,5 +46,15 @@
         android:textSize="18sp"
         android:background="@drawable/rounded_button"
         android:textColor="#FFFFFF"
+        android:padding="12dp" />
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Log Out"
+        android:textSize="18sp"
+        android:background="@drawable/rounded_button"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp"
         android:padding="12dp" />
 </LinearLayout>

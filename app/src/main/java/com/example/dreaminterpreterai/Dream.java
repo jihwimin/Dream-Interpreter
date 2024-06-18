@@ -10,10 +10,12 @@ public class Dream {
     public String date;
     public String dream;
     public String interpretation;
+    public int userId; // Associate each dream with a user
 
-    public Dream(String date, String dream, String interpretation) {
+    public Dream(String date, String dream, String interpretation, int userId) {
         this.date = date;
         this.dream = dream;
         this.interpretation = interpretation;
+        this.userId = userId;
     }
 }

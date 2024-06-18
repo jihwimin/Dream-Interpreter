@@ -15,21 +15,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     private EditText dreamInput;
     private TextView interpretationOutput;
     private Button interpretButton, backButton;
     private ProgressBar progressBar;
-    private DreamDatabase db;
+    private AppDatabase db;
     private DreamDao dreamDao;
+    private ExecutorService executorService;
     private static final String TAG = "MainActivity";
     private static final String DISCLAIMER = "주의사항: 꿈 해석은 주관적이며 모든 사람에게 해당되지는 않을 수 있습니다. 아래 해석은 단순한 예측에 불과하니 유념하시기 바랍니다.";
     private static final int MAX_RETRIES = 3;
+    private int userId; // Add userId field
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +47,12 @@ public class MainActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
         progressBar = findViewById(R.id.progressBar);
 
-        // Initialize the database and DAO
-        db = DreamDatabase.getInstance(this);
+        db = AppDatabase.getInstance(this);
         dreamDao = db.dreamDao();
+        executorService = Executors.newSingleThreadExecutor();
+
+        Intent intent = getIntent();
+        userId = intent.getIntExtra("userId", -1); // Get user ID from intent
 
         interpretButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, InitialActivity.class);
+                intent.putExtra("userId", userId); // Pass user ID back if needed
                 startActivity(intent);
                 finish();
             }
@@ -75,8 +84,9 @@ public class MainActivity extends AppCompatActivity {
                     ". Organize the interpretation into sections and give a prediction of the future.";
         }
 
+
         ChatRequest.Message userMessage = new ChatRequest.Message("user", prompt);
-        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));
+        ChatRequest request = new ChatRequest("gpt-4o", Collections.singletonList(userMessage));  // Using GPT-4
 
         ApiInterface apiService = ApiClient.getRetrofitInstance().create(ApiInterface.class);
         Call<ChatResponse> call = apiService.getDreamInterpretation(request);
@@ -128,13 +138,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveDream(String dream, String interpretation) {
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        Dream newDream = new Dream(currentDate, dream, interpretation);
-        new Thread(new Runnable() {
+        Dream newDream = new Dream(currentDate, dream, interpretation, userId); // Include userId
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
                 dreamDao.insert(newDream);
             }
-        }).start();
+        });
     }
 
     private boolean containsKoreanCharacters(String text) {

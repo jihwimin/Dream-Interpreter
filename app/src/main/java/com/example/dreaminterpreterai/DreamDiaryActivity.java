@@ -2,6 +2,7 @@ package com.example.dreaminterpreterai;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,11 +13,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapter.OnDreamDeleteListener {
-    private DreamDatabase db;
+    private AppDatabase db;
     private DreamDao dreamDao;
     private RecyclerView recyclerView;
     private DreamAdapter adapter;
     private ExecutorService executorService;
+    private int userId;
+    private static final String TAG = "DreamDiaryActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,28 +29,33 @@ public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapte
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        db = DreamDatabase.getInstance(this);
+        db = AppDatabase.getInstance(this);
         dreamDao = db.dreamDao();
         executorService = Executors.newSingleThreadExecutor();
+
+        Intent intent = getIntent();
+        userId = intent.getIntExtra("userId", -1);
+        Log.d(TAG, "Received userId: " + userId);
+
+        loadUserDreams();
 
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DreamDiaryActivity.this, InitialActivity.class);
-                startActivity(intent);
+                Intent backIntent = new Intent(DreamDiaryActivity.this, InitialActivity.class);
+                backIntent.putExtra("userId", userId); // Pass user ID back if needed
+                startActivity(backIntent);
                 finish();
             }
         });
-
-        loadDreams();
     }
 
-    private void loadDreams() {
+    private void loadUserDreams() {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                final List<Dream> dreamList = dreamDao.getAllDreams();
+                List<Dream> dreamList = dreamDao.getDreamsByUserId(userId); // Fetch dreams for the current user
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -68,7 +76,7 @@ public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        loadDreams();
+                        loadUserDreams(); // Reload dreams after deletion
                     }
                 });
             }

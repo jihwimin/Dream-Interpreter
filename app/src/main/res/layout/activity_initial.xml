@@ -1,60 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="#F5F5F5"
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/dreamImage"
-        android:layout_width="match_parent"
-        android:layout_height="389dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/dream_image"
-        android:background="@drawable/rounded_image"
-        android:clipToOutline="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome to Dream App"
-        android:textSize="24sp"
-        android:textColor="@color/dark_purple"
-        android:layout_marginBottom="32dp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/dreamInterpreterButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Dream Interpreter"
-        android:textSize="18sp"
-        android:background="@drawable/rounded_button"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="16dp"
-        android:padding="12dp" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/dreamDiaryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Dream Diary"
-        android:textSize="18sp"
-        android:background="@drawable/rounded_button"
-        android:textColor="#FFFFFF"
-        android:padding="12dp" />
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Log Out"
-        android:textSize="18sp"
-        android:background="@drawable/rounded_button"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="16dp"
-        android:padding="12dp" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/dreamImage"
+            android:layout_width="match_parent"
+            android:layout_height="389dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/dream_image"
+            android:background="@drawable/rounded_image"
+            android:clipToOutline="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome to Dream App"
+            android:textSize="24sp"
+            android:textColor="@color/dark_purple"
+            android:layout_marginBottom="32dp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/dreamInterpreterButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dream Interpreter"
+            android:textSize="18sp"
+            android:background="@drawable/rounded_button"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/dreamDiaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dream Diary"
+            android:textSize="18sp"
+            android:background="@drawable/rounded_button"
+            android:textColor="#FFFFFF"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log Out"
+            android:textSize="18sp"
+            android:background="@drawable/rounded_button"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"
+            android:padding="12dp" />
+    </LinearLayout>
+</ScrollView>

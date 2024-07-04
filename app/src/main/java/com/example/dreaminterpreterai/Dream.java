@@ -10,7 +10,7 @@ public class Dream {
     public String date;
     public String dream;
     public String interpretation;
-    public int userId;
+    public int userId; // Add userId field
     public int groupId;
 
     public Dream(String date, String dream, String interpretation, int userId, int groupId) {

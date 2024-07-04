@@ -12,11 +12,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private static final Pattern ENGLISH_PATTERN = Pattern.compile("^[a-zA-Z0-9]+$");
+    private EditText signupUsernameEditText, signupPasswordEditText;
+    private Button signupSubmitButton, backButton;
     private AppDatabase db;
     private UserDao userDao;
     private ExecutorService executorService;
@@ -27,11 +27,10 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        EditText signupUsernameEditText = findViewById(R.id.signupUsernameEditText);
-        EditText signupEmailEditText = findViewById(R.id.signupEmailEditText);
-        EditText signupPasswordEditText = findViewById(R.id.signupPasswordEditText);
-        Button signupSubmitButton = findViewById(R.id.signupSubmitButton);
-        Button backButton = findViewById(R.id.backButton);
+        signupUsernameEditText = findViewById(R.id.signupUsernameEditText);
+        signupPasswordEditText = findViewById(R.id.signupPasswordEditText);
+        signupSubmitButton = findViewById(R.id.signupSubmitButton);
+        backButton = findViewById(R.id.backButton);
 
         db = AppDatabase.getInstance(this);
         userDao = db.userDao();
@@ -40,48 +39,51 @@ public class SignupActivity extends AppCompatActivity {
         signupSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = signupUsernameEditText.getText().toString();
-                String email = signupEmailEditText.getText().toString();
-                String password = signupPasswordEditText.getText().toString();
+                String username = signupUsernameEditText.getText().toString().trim();
+                String password = signupPasswordEditText.getText().toString().trim();
 
-                if (!isValidInput(username) || !isValidInput(password)) {
-                    Toast.makeText(SignupActivity.this, "Username and password must be in English characters only", Toast.LENGTH_SHORT).show();
-                } else if (username.length() < 4) {
-                    Toast.makeText(SignupActivity.this, "Username must be at least 4 characters", Toast.LENGTH_SHORT).show();
-                } else if (password.length() < 8) {
-                    Toast.makeText(SignupActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
-                } else {
-                    executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "Checking if username exists: " + username);
-                            User existingUser = userDao.getUserByUsername(username);
-                            if (existingUser != null) {
-                                Log.d(TAG, "Username already exists: " + username);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(SignupActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                Log.d(TAG, "Creating new user");
-                                User user = new User(username, email, password);
-                                userDao.insert(user);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        saveUserCredentials(username, password);
-                                        Intent intent = new Intent(SignupActivity.this, InitialActivity.class);
-                                        intent.putExtra("userId", user.id); // Pass the user ID to the next activity
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                });
-                            }
-                        }
-                    });
+                if (username.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(SignupActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                if (username.length() < 4) {
+                    Toast.makeText(SignupActivity.this, "Username must be at least 4 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (password.length() < 8) {
+                    Toast.makeText(SignupActivity.this, "Password must be at least 8 characters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                executorService.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        User existingUser = userDao.getUserByUsername(username);
+                        if (existingUser != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignupActivity.this, "Username already exists", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            User newUser = new User(username, password);
+                            userDao.insert(newUser);
+                            saveCredentials(username, password);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(SignupActivity.this, "Sign up successful!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                });
             }
         });
 
@@ -95,11 +97,7 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private boolean isValidInput(String input) {
-        return ENGLISH_PATTERN.matcher(input).matches();
-    }
-
-    private void saveUserCredentials(String username, String password) {
+    private void saveCredentials(String username, String password) {
         SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("username", username);

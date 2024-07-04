@@ -9,10 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class DreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int VIEW_TYPE_DREAM = 0;
-    private static final int VIEW_TYPE_SEPARATOR = 1;
-
+public class DreamAdapter extends RecyclerView.Adapter<DreamAdapter.DreamViewHolder> {
     private List<Dream> dreamList;
     private OnDreamDeleteListener onDreamDeleteListener;
 
@@ -21,41 +18,32 @@ public class DreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         this.onDreamDeleteListener = onDreamDeleteListener;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position > 0 && dreamList.get(position).groupId != dreamList.get(position - 1).groupId) {
-            return VIEW_TYPE_SEPARATOR;
-        }
-        return VIEW_TYPE_DREAM;
-    }
-
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_SEPARATOR) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_separator, parent, false);
-            return new SeparatorViewHolder(view);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dream, parent, false);
-            return new DreamViewHolder(view);
-        }
+    public DreamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dream, parent, false);
+        return new DreamViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder.getItemViewType() == VIEW_TYPE_DREAM) {
-            DreamViewHolder dreamHolder = (DreamViewHolder) holder;
-            Dream dream = dreamList.get(position);
-            dreamHolder.dateTextView.setText(dream.date);
-            dreamHolder.dreamTextView.setText(dream.dream);
-            dreamHolder.interpretationTextView.setText(dream.interpretation);
+    public void onBindViewHolder(@NonNull DreamViewHolder holder, int position) {
+        Dream dream = dreamList.get(position);
+        holder.dateTextView.setText(dream.date);
+        holder.dreamTextView.setText(dream.dream);
+        holder.interpretationTextView.setText(dream.interpretation);
 
-            dreamHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onDreamDeleteListener.onDelete(dream);
-                }
-            });
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDreamDeleteListener.onDelete(dream);
+            }
+        });
+
+        // Add a divider line between different dream groups
+        if (position > 0 && dreamList.get(position - 1).groupId != dream.groupId) {
+            holder.dividerView.setVisibility(View.VISIBLE);
+        } else {
+            holder.dividerView.setVisibility(View.GONE);
         }
     }
 
@@ -67,6 +55,7 @@ public class DreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static class DreamViewHolder extends RecyclerView.ViewHolder {
         TextView dateTextView, dreamTextView, interpretationTextView;
         Button deleteButton;
+        View dividerView;
 
         public DreamViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,12 +63,7 @@ public class DreamAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             dreamTextView = itemView.findViewById(R.id.dreamTextView);
             interpretationTextView = itemView.findViewById(R.id.interpretationTextView);
             deleteButton = itemView.findViewById(R.id.deleteButton);
-        }
-    }
-
-    public static class SeparatorViewHolder extends RecyclerView.ViewHolder {
-        public SeparatorViewHolder(@NonNull View itemView) {
-            super(itemView);
+            dividerView = itemView.findViewById(R.id.dividerView);
         }
     }
 

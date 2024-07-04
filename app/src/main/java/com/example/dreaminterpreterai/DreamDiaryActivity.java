@@ -7,6 +7,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +15,8 @@ import java.util.concurrent.Executors;
 public class DreamDiaryActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private DreamAdapter dreamAdapter;
+    private AppDatabase db;
     private DreamDao dreamDao;
     private ExecutorService executorService;
     private int userId;
@@ -25,18 +28,18 @@ public class DreamDiaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dream_diary);
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         backButton = findViewById(R.id.backButton);
 
-        AppDatabase db = AppDatabase.getInstance(this);
+        db = AppDatabase.getInstance(this);
         dreamDao = db.dreamDao();
         executorService = Executors.newSingleThreadExecutor();
 
         Intent intent = getIntent();
         userId = intent.getIntExtra("userId", -1);
 
-        loadDreams();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        loadDreamsForUser();
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,26 +47,26 @@ public class DreamDiaryActivity extends AppCompatActivity {
                 Intent intent = new Intent(DreamDiaryActivity.this, InitialActivity.class);
                 intent.putExtra("userId", userId);
                 startActivity(intent);
-                finish(); // Close the current activity
+                finish();
             }
         });
     }
 
-    private void loadDreams() {
+    private void loadDreamsForUser() {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                List<Dream> dreamList = dreamDao.getAllDreamsByUser(userId);
+                List<Dream> dreamList = dreamDao.getDreamsForUser(userId);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        DreamAdapter adapter = new DreamAdapter(dreamList, new DreamAdapter.OnDreamDeleteListener() {
+                        dreamAdapter = new DreamAdapter(dreamList, new DreamAdapter.OnDreamDeleteListener() {
                             @Override
                             public void onDelete(Dream dream) {
                                 deleteDream(dream);
                             }
                         });
-                        recyclerView.setAdapter(adapter);
+                        recyclerView.setAdapter(dreamAdapter);
                     }
                 });
             }
@@ -75,7 +78,7 @@ public class DreamDiaryActivity extends AppCompatActivity {
             @Override
             public void run() {
                 dreamDao.delete(dream);
-                loadDreams(); // Refresh the list after deletion
+                loadDreamsForUser();
             }
         });
     }

@@ -19,5 +19,13 @@ public class ChatRequest {
             this.role = role;
             this.content = content;
         }
+
+        public String getRole() {
+            return role;
+        }
+
+        public String getContent() {
+            return content;
+        }
     }
 }

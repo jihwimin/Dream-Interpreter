@@ -11,9 +11,12 @@ public interface DreamDao {
     @Insert
     void insert(Dream dream);
 
-    @Query("SELECT * FROM Dream WHERE userId = :userId ORDER BY id DESC")
-    List<Dream> getDreamsByUserId(int userId);
-
     @Delete
     void delete(Dream dream);
+
+    @Query("SELECT * FROM Dream WHERE userId = :userId ORDER BY groupId DESC, date DESC")
+    List<Dream> getAllDreamsByUser(int userId);
+
+    @Query("SELECT * FROM Dream WHERE userId = :userId AND groupId = :groupId ORDER BY date DESC")
+    List<Dream> getDreamsByGroupId(int userId, int groupId);
 }

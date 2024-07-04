@@ -2,7 +2,6 @@ package com.example.dreaminterpreterai;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,14 +11,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapter.OnDreamDeleteListener {
-    private AppDatabase db;
-    private DreamDao dreamDao;
+public class DreamDiaryActivity extends AppCompatActivity {
+
     private RecyclerView recyclerView;
-    private DreamAdapter adapter;
+    private DreamDao dreamDao;
     private ExecutorService executorService;
     private int userId;
-    private static final String TAG = "DreamDiaryActivity";
+    private Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,37 +27,42 @@ public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapte
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        db = AppDatabase.getInstance(this);
+        backButton = findViewById(R.id.backButton);
+
+        AppDatabase db = AppDatabase.getInstance(this);
         dreamDao = db.dreamDao();
         executorService = Executors.newSingleThreadExecutor();
 
         Intent intent = getIntent();
         userId = intent.getIntExtra("userId", -1);
-        Log.d(TAG, "Received userId: " + userId);
 
-        loadUserDreams();
+        loadDreams();
 
-        Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent backIntent = new Intent(DreamDiaryActivity.this, InitialActivity.class);
-                backIntent.putExtra("userId", userId); // Pass user ID back if needed
-                startActivity(backIntent);
-                finish();
+                Intent intent = new Intent(DreamDiaryActivity.this, InitialActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+                finish(); // Close the current activity
             }
         });
     }
 
-    private void loadUserDreams() {
+    private void loadDreams() {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                List<Dream> dreamList = dreamDao.getDreamsByUserId(userId); // Fetch dreams for the current user
+                List<Dream> dreamList = dreamDao.getAllDreamsByUser(userId);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new DreamAdapter(dreamList, DreamDiaryActivity.this);
+                        DreamAdapter adapter = new DreamAdapter(dreamList, new DreamAdapter.OnDreamDeleteListener() {
+                            @Override
+                            public void onDelete(Dream dream) {
+                                deleteDream(dream);
+                            }
+                        });
                         recyclerView.setAdapter(adapter);
                     }
                 });
@@ -67,18 +70,12 @@ public class DreamDiaryActivity extends AppCompatActivity implements DreamAdapte
         });
     }
 
-    @Override
-    public void onDelete(Dream dream) {
+    private void deleteDream(Dream dream) {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 dreamDao.delete(dream);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadUserDreams(); // Reload dreams after deletion
-                    }
-                });
+                loadDreams(); // Refresh the list after deletion
             }
         });
     }

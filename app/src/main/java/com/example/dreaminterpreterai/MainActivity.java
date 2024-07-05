@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     "a dream interpretation solution to that entry. You should only be interpreting dreams.";
         }
 
+
         // Add the prompt message to the conversation history
         ChatRequest.Message promptMessage = new ChatRequest.Message("system", prompt);
         List<ChatRequest.Message> fullConversationHistory = new ArrayList<>(conversationHistory);

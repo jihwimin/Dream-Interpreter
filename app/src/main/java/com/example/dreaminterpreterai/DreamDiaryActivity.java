@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,10 +58,21 @@ public class DreamDiaryActivity extends AppCompatActivity {
             @Override
             public void run() {
                 List<Dream> dreamList = dreamDao.getDreamsForUser(userId);
+                List<Object> items = new ArrayList<>();
+                int previousGroupId = -1;
+                for (Dream dream : dreamList) {
+                    if (dream.groupId != previousGroupId) {
+                        if (previousGroupId != -1) {
+                            items.add(new Object()); // Add a separator
+                        }
+                        previousGroupId = dream.groupId;
+                    }
+                    items.add(dream);
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dreamAdapter = new DreamAdapter(dreamList, new DreamAdapter.OnDreamDeleteListener() {
+                        dreamAdapter = new DreamAdapter(items, new DreamAdapter.OnDreamDeleteListener() {
                             @Override
                             public void onDelete(Dream dream) {
                                 deleteDream(dream);

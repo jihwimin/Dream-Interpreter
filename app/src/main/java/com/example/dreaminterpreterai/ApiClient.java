@@ -27,7 +27,7 @@ public class ApiClient {
             // Read the API key from the environment variable
             //Dotenv dotenv = Dotenv.configure().load();
             //String apiKey = dotenv.get("OPENAI_API_KEY");
-            String apiKey = "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";
+            String apiKey = "API KEY";
             //String apiKey = System.getenv("OPENAI_API_KEY");
             if (apiKey == null || apiKey.isEmpty()) {
                 throw new IllegalStateException("API key is not set in the environment variables.");
